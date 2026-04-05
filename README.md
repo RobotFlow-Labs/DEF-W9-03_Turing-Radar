@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="assets/hero.png" alt="Turing-Radar Hero" width="100%">
+</p>
+
 # ANIMA Turing-Radar
 
 Challenge-compatible ANIMA defense module scaffold for radar pulse deinterleaving on TSRD.

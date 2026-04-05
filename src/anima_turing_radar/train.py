@@ -171,11 +171,17 @@ def load_and_preprocess_files(
         record = load_pulse_train_h5(fpath)
         if record.labels is None:
             continue
+        # Preprocess per-file (delta_toa needs per-file sort order)
         features = preprocessor.fit_transform(record.data)
-        labels = record.labels.copy()
+        # Filter NaN/inf from preprocessing
+        mask = np.isfinite(features).all(axis=1)
+        features = features[mask]
+        labels = record.labels[mask].astype(np.int64)
+        if len(labels) == 0:
+            continue
         # Make labels globally unique across files
         labels = labels + label_offset
-        label_offset = labels.max() + 1
+        label_offset = int(labels.max()) + 1
         all_features.append(features)
         all_labels.append(labels)
         if (i + 1) % 100 == 0:
