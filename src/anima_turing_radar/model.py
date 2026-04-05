@@ -84,7 +84,7 @@ class EmbeddedClusterDeinterleaver(SklearnClusterDeinterleaver):
     def predict(self, data: np.ndarray) -> np.ndarray:
         x = np.asarray(data, dtype=np.float32)
         z = self.embedder(x) if self.embedder is not None else x
-        return super().predict(z)
+        return SklearnClusterDeinterleaver.predict(self, z)
 
 
 def build_deinterleaver(

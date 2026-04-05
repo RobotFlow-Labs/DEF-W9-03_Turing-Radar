@@ -1,12 +1,27 @@
-FROM python:3.11-slim
+FROM python:3.11-slim AS base
 
 WORKDIR /app
 
+# System deps
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libhdf5-dev && \
+    rm -rf /var/lib/apt/lists/*
+
+# Python deps
 COPY pyproject.toml README.md /app/
 COPY src /app/src
 COPY configs /app/configs
 
-RUN pip install --no-cache-dir .
+RUN pip install --no-cache-dir ".[dev]"
 
+# Health + serve
 EXPOSE 8080
-CMD ["python", "-m", "uvicorn", "anima_turing_radar.api:create_app", "--factory", "--host", "0.0.0.0", "--port", "8080"]
+ENV ANIMA_MODULE_NAME=turing-radar
+ENV ANIMA_DEVICE=cpu
+ENV ANIMA_SERVE_PORT=8080
+
+HEALTHCHECK --interval=30s --timeout=5s --retries=3 \
+    CMD python -c "import urllib.request; urllib.request.urlopen('http://localhost:8080/health')" || exit 1
+
+CMD ["python", "-m", "uvicorn", "anima_turing_radar.api:create_app", \
+     "--factory", "--host", "0.0.0.0", "--port", "8080"]

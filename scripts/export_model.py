@@ -37,13 +37,18 @@ def export_onnx(model: PulseEmbeddingNet, output_dir: Path, device: str = "cpu")
     model.eval()
     torch.onnx.export(
         model,
-        dummy,
+        (dummy,),
         str(path),
         input_names=["pulses"],
         output_names=["embeddings"],
         dynamic_axes={"pulses": {0: "batch"}, "embeddings": {0: "batch"}},
         opset_version=17,
+        dynamo=False,
     )
+    # Remove any external data files — weights are tiny, embed inline
+    data_file = path.with_suffix(".onnx.data")
+    if data_file.exists():
+        data_file.unlink()
     print(f"[EXPORT] ONNX: {path} ({path.stat().st_size / 1024:.1f} KB)")
     return path
 

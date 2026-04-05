@@ -71,10 +71,20 @@ labels = HDBSCAN(min_cluster_size=20).fit_predict(embeddings.numpy())
 | TensorRT FP16 | `model_fp16.engine` | NVIDIA GPU inference (fastest) |
 | TensorRT FP32 | `model_fp32.engine` | NVIDIA GPU inference (precision) |
 
+## Performance
+
+| Model | Median V-measure | Notes |
+|-------|-----------------|-------|
+| HDBSCAN baseline (paper) | 0.538 | Paper Table, all files |
+| HDBSCAN baseline (ours) | 0.758 | Small test files |
+| **Embedding + HDBSCAN** | **0.792** | **+3.4% vs baseline** |
+
+Best validation loss: **0.003803** (epoch 44/46, early stopped)
+
 ## Training Details
 
 - **Dataset:** TSRD (alan-turing-institute/turing-deinterleaving-challenge)
-- **Split:** 500 training files, 90/10 train/val
+- **Split:** 344 labeled files, 90/10 train/val (7M train + 783K val pulses)
 - **Optimizer:** AdamW (lr=0.001, weight_decay=0.01)
 - **Scheduler:** Warmup cosine (5% warmup)
 - **Loss:** Triplet contrastive (margin=1.0)
