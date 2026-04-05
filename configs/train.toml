@@ -1,0 +1,49 @@
+[data]
+data_root = "/mnt/train-data/datasets/turing_deinterleaving_challenge"
+subset = "archive/train"
+window_length = 50000
+min_emitters = 2
+max_emitters = 110
+file_pattern = "*.h5"
+
+[preprocess]
+sort_by_toa = true
+delta_toa = true
+standardize = true
+clip_std = 8.0
+
+[clustering]
+algorithm = "hdbscan"
+default_label = -1
+min_cluster_size = 20
+min_samples = 5
+eps = 0.0
+kmeans_k = 8
+
+[training]
+batch_size = 8192
+learning_rate = 0.001
+epochs = 50
+hidden_dim = 128
+embed_dim = 32
+margin = 1.0
+num_workers = 4
+seed = 42
+max_files = 2500
+warmup_ratio = 0.05
+min_lr = 1e-6
+weight_decay = 0.01
+gradient_clip = 1.0
+precision = "bf16"
+val_every_n_epochs = 1
+patience = 10
+
+[checkpoint]
+output_dir = "/mnt/artifacts-datai/checkpoints/turing-radar"
+metric = "val_loss"
+keep_top_k = 2
+save_every_n_steps = 500
+
+[service]
+host = "0.0.0.0"
+port = 8080

@@ -4,6 +4,39 @@ services:
       context: ..
       dockerfile: docker/Dockerfile.serve
     ports:
-      - "8080:8080"
+      - "${ANIMA_SERVE_PORT:-8080}:8080"
+    env_file: ../.env.serve
     environment:
       - PYTHONUNBUFFERED=1
+    profiles:
+      - serve
+      - api
+
+  turing-radar-cuda:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.cuda
+    ports:
+      - "${ANIMA_SERVE_PORT:-8080}:8080"
+    env_file: ../.env.serve
+    environment:
+      - PYTHONUNBUFFERED=1
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    profiles:
+      - serve
+      - cuda
+
+  turing-radar-test:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.serve
+    command: ["python", "-m", "pytest", "tests/", "-v"]
+    working_dir: /app
+    profiles:
+      - test

@@ -1,0 +1,56 @@
+name: turing-radar
+version: 0.1.0
+description: "ANIMA defense module for radar pulse deinterleaving on the Turing Synthetic Radar Dataset"
+domain: defense
+task: clustering
+paper: "arXiv:2602.03856"
+
+capabilities:
+  - inference
+  - evaluation
+  - api
+  - ros2
+
+api:
+  framework: fastapi
+  port: 8080
+  endpoints:
+    - path: /health
+      method: GET
+    - path: /ready
+      method: GET
+    - path: /predict
+      method: POST
+
+docker:
+  serve: docker/Dockerfile.serve
+  cuda: docker/Dockerfile.cuda
+  compose: docker/docker-compose.serve.yml
+
+ros2:
+  node: anima_turing_radar.ros2_node
+  topics:
+    input: /anima/turing_radar/pdw_input
+    output: /anima/turing_radar/labels_output
+
+datasets:
+  - name: turing_deinterleaving_challenge
+    source: huggingface
+    repo: alan-turing-institute/turing-deinterleaving-challenge
+    local_path: /mnt/train-data/datasets/turing_deinterleaving_challenge
+
+models: []
+
+metrics:
+  primary: v_measure
+  secondary:
+    - ari
+    - ami
+    - homogeneity
+    - completeness
+    - mcc
+    - f1
+
+hf:
+  org: ilessio-aiflowlab
+  checkpoint_repo: ilessio-aiflowlab/turing-radar-checkpoint

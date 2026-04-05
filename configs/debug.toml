@@ -1,8 +1,8 @@
 [data]
 data_root = "/mnt/train-data/datasets/turing_deinterleaving_challenge"
-subset = "archive/test"
-window_length = 100000
-min_emitters = 1
+subset = "archive/train"
+window_length = 10000
+min_emitters = 2
 max_emitters = 110
 file_pattern = "*.h5"
 
@@ -19,6 +19,22 @@ min_cluster_size = 20
 min_samples = 5
 eps = 0.0
 kmeans_k = 8
+
+[training]
+batch_size = 4096
+learning_rate = 0.001
+epochs = 2
+hidden_dim = 128
+embed_dim = 32
+margin = 1.0
+num_workers = 4
+seed = 42
+max_files = 5
+
+[checkpoint]
+output_dir = "/mnt/artifacts-datai/checkpoints/turing-radar"
+metric = "val_loss"
+keep_top_k = 2
 
 [service]
 host = "0.0.0.0"

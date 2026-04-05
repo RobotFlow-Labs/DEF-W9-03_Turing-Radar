@@ -39,7 +39,7 @@ def load_pulse_train_h5(path: str | Path) -> PulseTrainRecord:
             raise ValueError(f"Invalid pulse train file, missing 'data': {file_path}")
 
         data = np.asarray(handle["data"], dtype=np.float32)
-        labels = np.asarray(handle["labels"]) if "labels" in handle else None
+        labels = np.asarray(handle["labels"]).flatten() if "labels" in handle else None
         metadata = _read_h5_group(handle["metadata"]) if "metadata" in handle else {}
 
     if data.ndim != 2:

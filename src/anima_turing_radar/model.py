@@ -2,9 +2,8 @@
 
 from __future__ import annotations
 
-from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from typing import Callable
+from typing import Callable, Protocol
 
 import numpy as np
 from sklearn import cluster
@@ -12,17 +11,14 @@ from sklearn import cluster
 from .config import ClusteringConfig
 
 
-class Deinterleaver(ABC):
-    def __init__(self, default_label: int | None = -1) -> None:
-        self.default_label = default_label
+class Deinterleaver(Protocol):
+    default_label: int | None
 
-    @abstractmethod
-    def predict(self, data: np.ndarray) -> np.ndarray:
-        raise NotImplementedError
+    def predict(self, data: np.ndarray) -> np.ndarray: ...
 
 
 @dataclass(slots=True)
-class SklearnClusterDeinterleaver(Deinterleaver):
+class SklearnClusterDeinterleaver:
     algorithm: str = "hdbscan"
     default_label: int | None = -1
     min_cluster_size: int = 20
@@ -31,7 +27,6 @@ class SklearnClusterDeinterleaver(Deinterleaver):
     kmeans_k: int = 8
 
     def __post_init__(self) -> None:
-        super().__init__(default_label=self.default_label)
         self.algorithm = self.algorithm.lower()
 
     def _build_clusterer(self, n_samples: int):

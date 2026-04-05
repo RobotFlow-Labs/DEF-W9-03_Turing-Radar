@@ -1,6 +1,6 @@
 [data]
-data_root = "data"
-subset = "test"
+data_root = "/mnt/train-data/datasets/turing_deinterleaving_challenge"
+subset = "archive/test"
 window_length = 50000
 min_emitters = 2
 max_emitters = 110
